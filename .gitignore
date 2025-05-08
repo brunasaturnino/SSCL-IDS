@@ -1,35 +1,18 @@
-# Notebooks e checkpoints
-.ipynb_checkpoints/
-*.ipynb
-
-# Dados CSV e outputs temporários
+# Arquivos CSV
 *.csv
+
+# Datasets e temporários
 Dataset/
 tmp_folder/
 
-# Modelos e checkpoints pesados
-*.pt
-*.pth
-*.ckpt
-
-# Logs e arquivos de TensorBoard
-*.log
-logs/
+# TensorBoard
+*.tfevents.*
 new_logs/
 
-# Arquivos do sistema
-.DS_Store
-*.swp
-
-# Arquivos do VS Code
-.vscode/
-
-# Arquivos do Python
+# Python cache
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
 
-# Arquivos do Jupyter
-*.nbconvert.ipynb
-s
+# Modelos
+*.pt
+*.pth
