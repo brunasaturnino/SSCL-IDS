@@ -52,6 +52,8 @@ def OOD_classifier(train_features, test_features, k, T, cn, args):  # features m
 
 def auroc_calculations(train_embeddings, test_normal_embeddings, test_attack_embeddings, args):
     print('t == 0.04')
+
+    # Calcula similaridade
     scores_in, scores_in_max = OOD_classifier(
         train_embeddings, test_normal_embeddings, -1, 0.04, 1, args
     )
@@ -59,21 +61,30 @@ def auroc_calculations(train_embeddings, test_normal_embeddings, test_attack_emb
         train_embeddings, test_attack_embeddings, -1, 0.04, 1, args
     )
 
+    # Remove NaNs (substitui por 0)
+    scores_in = torch.nan_to_num(scores_in, nan=0.0)
+    scores_out = torch.nan_to_num(scores_out, nan=0.0)
+    scores_in_max = torch.nan_to_num(scores_in_max, nan=0.0)
+    scores_out_max = torch.nan_to_num(scores_out_max, nan=0.0)
+
+    # AUROC com média das similaridades
     labels = torch.cat((torch.ones(scores_in.size(0)), torch.zeros(scores_out.size(0))))
     scores = torch.cat((scores_in, scores_out))
     auroc = roc_auc_score(labels.numpy(), scores.cpu().numpy())
-    print(f"AUROC: {auroc}")
+    print(f"AUROC: {auroc:.4f}")
 
+    # AUROC com máxima similaridade do batch
     labels_max_cos = torch.cat((torch.ones(scores_in_max.size(0)), torch.zeros(scores_out_max.size(0))))
     scores_max_cos = torch.cat((scores_in_max, scores_out_max))
     auroc_max_cos = roc_auc_score(labels_max_cos.numpy(), scores_max_cos.cpu().numpy())
-    print(f"AUROC for max cosine similarity: {auroc_max_cos}")
+    print(f"AUROC for max cosine similarity: {auroc_max_cos:.4f}")
+
 
 
 if __name__ == "__main__":
     main_dir = os.path.dirname(os.path.abspath(__file__))
     test_dataset_dir = os.path.join(main_dir, 'Dataset/')
-    chk_dir = os.path.join(main_dir, "checkpoints/")
+    chk_dir = os.path.join(main_dir, "new_checkpoints/")
 
     parser = argparse.ArgumentParser("Evaluation of SSCL-IDS")
     parser.add_argument(
@@ -91,7 +102,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    ckpt = torch.load(os.path.join(chk_dir, args.model_chkpt))
+    ckpt = torch.load(os.path.join(chk_dir, args.model_chkpt), weights_only=False)
+
     train_args = ckpt["args"]
     
     model = SCARF(
@@ -106,8 +118,8 @@ if __name__ == "__main__":
 
     # Load training data
     #tmp_dir+str(args.dataset_path.split('/')[-1].split('.')[0])+"_training_normalflows.csv"
-    if args.train_from_scratch == True:
-        train_normal_df = load_pandas_df(os.path.join(main_dir, "tmp_folder/"+args.test_dataset_name))
+    if args.train_from_scratch :
+        train_normal_df = load_pandas_df(os.path.join(main_dir, "tmp_folder/sample_training_normalflows.csv"))
     else:
         train_normal_df = load_pandas_df(os.path.join(main_dir, 'training_cicbotnet.csv'))
     

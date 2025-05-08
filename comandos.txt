@@ -1,0 +1,13 @@
+python train.py --dataset_path datasets/CICIDS-2017/dataset.csv --batch_size 1024 --epochs 2 
+
+python evaluation.py --test_dataset_name datasets/CICIDS-2017/dataset.csv --batch_size 32 --model_chkpt scarf1_embdd_dim=45_lr=0.001_bs=32_epochs=2_tempr=0.5_V=onlyunsw_cr_rt=0.4_ach_cr_rt0.2_msk_rt0_ach_msk_rt0.pth --train_from_scratch False 
+
+python fine_tune.py --model_chkpt_path new_checkpoints/scarf1_embdd_dim=45_lr=0.001_bs=32_epochs=2_tempr=0.5_V=onlyunsw_cr_rt=0.4_ach_cr_rt0.2_msk_rt0_ach_msk_rt0.pth --dataset_dir datasets/CICIDS-2017/dataset.csv --batch_size_fine_tuning 32 --num_epochs 30 --learning_rate 0.001 --apply_smote True 
+
+python evaluations.py --dataset_path datasets/CICIDS-2017/dataset.csv model_chkpt new_checkpoints/scarf1_embdd_dim=45_lr=0.001_bs=32_epochs=200_tempr=0.5_V=onlyunsw_cr_rt=0.4_ach_cr_rt0.2_msk_rt0_ach_msk_rt0.pth --test_size 0.3 --batch_size 32
+
+python gpt2.py --dataset_path datasets/CICIDS-2017/sample.csv --epochs 2 --batch_size 32
+
+python treinamento.py --dataset_path datasets/CICIDS-2017/sample.csv --epochs 2 --batch_size 32
+
+python avaliação.py --test_path tmp_folder/test_processed.csv

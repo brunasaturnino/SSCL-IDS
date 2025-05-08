@@ -31,7 +31,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    ckpt = torch.load(args.model_chkpt_path)
+    import argparse
+    torch.serialization.add_safe_globals([argparse.Namespace])
+    ckpt = torch.load(args.model_chkpt_path, weights_only=False)
+
     train_args = ckpt["args"]
     model = SCARF(
         input_dim=train_args.input_dim,
@@ -56,8 +59,8 @@ if __name__ == "__main__":
     train_embeddings, train_labels = get_embeddings_labels(
         model, train_loader, device, to_numpy=True, normalize=True
     )
-    unknown_df = load_pandas_df("/home/pegah/Codes/ssl-ids/Dataset/allattack_mondaybenign.csv")
-    unknown_df0 = load_pandas_df("/home/pegah/Codes/ssl-ids/Dataset/ISCX-SlowDoS_1.csv")
+    unknown_df = load_pandas_df("/home/bruna/ssl-ids/Dataset/CICIDS-2017/sample.csv")
+    
     x_unknown, y_unknown = unknown_df.iloc[:, :-1], unknown_df["Label"]
     unknown_ds = ExampleDataset(  # onlin normal flows
         x_unknown.to_numpy(),
