@@ -119,7 +119,7 @@ if __name__ == "__main__":
     # Load training data
     #tmp_dir+str(args.dataset_path.split('/')[-1].split('.')[0])+"_training_normalflows.csv"
     if args.train_from_scratch :
-        train_normal_df = load_pandas_df(os.path.join(main_dir, "tmp_folder/sample_training_normalflows.csv"))
+        train_normal_df = load_pandas_df(os.path.join(main_dir, "tmp_folder/sample-unsw-f_training_normalflows.csv"))
     else:
         train_normal_df = load_pandas_df(os.path.join(main_dir, 'training_cicbotnet.csv'))
     

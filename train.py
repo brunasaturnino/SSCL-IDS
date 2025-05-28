@@ -38,7 +38,7 @@ def train_epoch(model, criterion, train_loader, optimizer, epoch, device):  # de
 
 def train(args):
     aug_info = f"cr_rt={args.corruption_rate}_ach_cr_rt{args.anchor_corruption_rate}_msk_rt{args.mask_rate}_ach_msk_rt{args.anchor_mask_rate}"
-    log_name = f"scarf1_embdd_dim={args.embedding_dim}_lr={args.lr}_bs={args.batch_size}_epochs={args.epochs}_tempr={args.temprature}_V={args.version}_{aug_info}"
+    log_name = f"scarf1_embdd_dim={args.embedding_dim}_lr={args.lr}_bs={args.batch_size}_epochs={args.epochs}_tempr={args.temprature}_V={args.version}_{aug_info}_unsw-f"
     writer = SummaryWriter(f"new_logs/f{log_name}") 
     model = SCARF(
         input_dim=args.input_dim,
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     print(f"training with only {args.dataset_path.split('/')[-1]} benign flows ...")
     x_train_normal,x_test_normal,_,y_train_normal,y_test_normal,_ = get_dataset(
         args.dataset_path, training_with_attacks= True,
-        separate_norm_attack= True, test_size=0.3)
+        separate_norm_attack= True, test_size=0.4)
     print(y_train_normal.value_counts())
     #create torch dataset
     train_ds = ExampleDataset(

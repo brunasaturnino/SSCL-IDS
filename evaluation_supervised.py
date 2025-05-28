@@ -59,7 +59,7 @@ if __name__ == "__main__":
     train_embeddings, train_labels = get_embeddings_labels(
         model, train_loader, device, to_numpy=True, normalize=True
     )
-    unknown_df = load_pandas_df("/home/bruna/ssl-ids/Dataset/CICIDS-2017/sample.csv")
+    unknown_df = load_pandas_df("/home/bruna/ssl-ids/Dataset/sample-unsw.csv")
     
     x_unknown, y_unknown = unknown_df.iloc[:, :-1], unknown_df["Label"]
     unknown_ds = ExampleDataset(  # onlin normal flows
@@ -99,6 +99,9 @@ if __name__ == "__main__":
         clf = RandomForestClassifier(n_estimators=200)
         clf.fit(train_embeddings, train_labels)
         prediction_emb = clf.predict(unknown_embeddings)
+        y_score_emb = clf.predict_proba(unknown_embeddings)[:, 1]
         _, unknown_labels = get_embeddings_labels(
         model, unknown_loader, device, to_numpy=False, normalize=False)
         print('classification report on unknown embedded set:',classification_report(unknown_labels, prediction_emb))
+        auc_emb = roc_auc_score(unknown_labels, y_score_emb)
+        print(f"ROC AUC (embeddings): {auc_emb:.4f}\n")

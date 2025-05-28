@@ -62,7 +62,7 @@ if __name__ == "__main__":
                         #scarf1_embedding_dim=45_corruption_rate=0.3_lr=0.001_batch_size=2046_epochs=200_temprature=0.5_version=101.pth", type=str)
     parser.add_argument("--dataset_dir", default="/home/pegah/Codes/ssl-ids/Dataset/ISCX-SlowDoS_1.csv")
     parser.add_argument("--batch_size_fine_tuning", default=1024, type=int)
-    parser.add_argument("--learning_rate", default=0.001)
+    parser.add_argument("--learning_rate", type=float, default=0.001)
     parser.add_argument("--num_epochs", default=30 , type=int)
     parser.add_argument("--apply_smote", default = True)
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    ckpt = torch.load(args.model_chkpt_path)
+    ckpt = torch.load(args.model_chkpt_path, weights_only=False)
     train_args = ckpt["args"]
     pretrained_model = SCARF(
         input_dim=train_args.input_dim,
@@ -217,19 +217,20 @@ if __name__ == "__main__":
                 logits = model(X_test)
                 pred = logits.argmax(dim = 1).cpu().numpy()
                 preds.extend(pred)
-                """
+                
                 probabilities = torch.nn.functional.softmax(logits, dim=1)
                 predicted_probabilities = probabilities[:, 1].cpu().numpy()
                 probs.extend(predicted_probabilities)
-                """
+                
                 labels.extend(y_test.cpu().numpy())
 
         #print('labels shape:', np.array(labels).shape)
         #print('probs shape:', np.array(probs).shape)
         # Calculate AUROC and F1-score
-        #auroc = roc_auc_score(np.array(labels), np.array(probs))
+        auroc = roc_auc_score(np.array(labels), np.array(probs))
         print('classification report of ED:', classification_report(np.array(labels), np.array(preds)))
-        #print(f'AUROC of ED: {auroc:.4f}')
+        
+        print(f'AUROC of ED: {auroc:.4f}')
         """
         #raw data:
         with torch.no_grad():
@@ -246,4 +247,3 @@ if __name__ == "__main__":
         auroc_rd = roc_auc_score(np.array(labels_raw), np.array(probs_raw))
         print(f'AUROC of RD: {auroc_rd:.4f}')
         """
-
